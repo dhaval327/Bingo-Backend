@@ -36,7 +36,9 @@ module.exports = class Game extends EventEmitter {
                 this.emit('win', (this.boardOfPlayers.get(board)))
             })
             this.boards.set(player, board)
+            this.boardOfPlayers.set(board, player)
         })
+        this.emit('gameStarted', )
     }
 
     _genRandomTiles(num) {

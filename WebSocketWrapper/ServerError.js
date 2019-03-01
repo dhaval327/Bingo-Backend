@@ -1,4 +1,4 @@
-class ServerError {
+/*class ServerError {
     constructor(errorCode, description) {
         this.code = errorCode;
         this.description = description;
@@ -20,4 +20,4 @@ Someconstructoty.prototype.
 
 let testObject = new Someconstructoty('fkwjnge', 'jbekvj')
 
-testObject.method1()
+testObject.method1()*/

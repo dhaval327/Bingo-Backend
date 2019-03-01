@@ -19,10 +19,16 @@ function createUser(connectionId) {
 
 let games = new Map()
 let users = new Map()
+let userNameToUsers = new Map()
+let tiles = new Map()
 
 wss.on('connection', (connectionId, headers) => {
-    let user = createUser(connectionId)
+    let username = headers['username']
+    let authKey = headers['authkey']
+    //check if authkey is from player or leader
+    let user = usernamesToUsers.get(username)
     users.set(connectionId, user)
+    //validate auth key
 })
 
 wss.onCommand('createGame', ['gameKey', 'gameName'], (req, resp) => {
@@ -47,7 +53,34 @@ wss.onCommand('joinGame', ['gameKey', 'question'], (req, resp) => {
         return
     } 
     user.player = player
+    user.game = game
     resp.send()
 })
 
-wss.onCommand('fillSquare', ['',''])
+wss.onCommand('startGame', null, (req, resp) => {
+    //make sure message is from leader
+    let user = users.get(req.id)
+    let game = user.game
+    if (game == null) {
+        resp.data.error = 'notInGame'
+        resp.data.send()
+        return
+    }
+    game.start()
+})
+
+wss.onCommand('fillTile', ['tileId'], (req, resp) => {
+    let game = users.get(req.id).game
+    if (game != null) {
+        let player = users.get(req.id).player
+        let tileId = req.data.tileId
+        let board = boards.get(player)
+        let tile = tiles.get(tileId)
+    }
+})
+
+function addPlayerListeners(player) {
+    player.on('won', () => {
+        //wss.send(won)
+    })
+}

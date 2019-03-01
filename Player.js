@@ -1,5 +1,5 @@
 const EventEmitter = require('events')
-module.exports = class Player  {
+module.exports = class Player extends EventEmitter {
     constructor(name) {
         this.name = name
         this._board = null

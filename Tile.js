@@ -1,10 +1,9 @@
 module.exports = class Tile {
-    constructor(password, question) {
-        this.password = password
+    constructor(question) {
         this.question = question
     }
 
     validate(validation) {
-        return password === this.password
+        return validation.validate()
     }
 }

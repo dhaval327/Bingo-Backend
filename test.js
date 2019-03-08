@@ -1,39 +1,11 @@
-const http = require('http')
-const Websocket = require('ws')
+const Game = require('./Game')
+const Tile = require('./Tile')
+let key = '12345'
+let name = 'test game'
+let axis = {x: 5, y: 5}
+let game = new Game(key, name, axis)
 
-let options = {
-    host: 'localhost',
-    path: '/login',
-    port: '8000',
-    method: 'POST'
-}
-
-callback = function(response) {
-    let str = ''
-    response.on('data', function(chunk) {
-        str += chunk
-        console.log('chunk')
-    })
-    response.on('end', function() {
-        console.log(str)
-        openWebSocket()
-    })
-    response.on('error', function(err) {
-        console.log(err)
-    })
-}
-
-function openWebSocket() {
-    console.log('open web soclet')
-    let socket = new Websocket("ws://localhost:8000", null)
-    socket.onerror = function(error) {
-        console.log(error)
-    }
-    socket.onopen = function() {
-        console.log('opened')
-    }
-}
-
-let req = http.request(options, callback)
-req.write('data')
-req.end()
+let player = game.createPlayer('Ethan')
+let tile  = new Tile('whats my name?')
+game.addPlayer(player, tile)
+console.log(game.players)

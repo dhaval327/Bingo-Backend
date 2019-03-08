@@ -1,6 +1,7 @@
 const EventEmitter = require('events')
 module.exports = class Board extends EventEmitter {
     constructor(tiles, axis) {
+        super()
         if ((axis.x * axis.y) != tiles.length) {
             return null
         }
@@ -15,6 +16,10 @@ module.exports = class Board extends EventEmitter {
                 curIndex++
             }
         }
+    }
+
+    get tiles() {
+        
     }
 
     selectTile(tile, validation) {

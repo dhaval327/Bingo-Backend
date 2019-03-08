@@ -9,18 +9,23 @@ class Player extends EventEmitter  {
     }
 }
 
-function createUser(connectionId) {
+function createUser(connectionId, id) {
     return {
         connectionId: connectionId,
         game: null,
-        player: null
+        player: null,
+        id : id
     }
 }
 
 let games = new Map()
 let users = new Map()
 let userNameToUsers = new Map()
+let playerToUser = new Map()
 let tiles = new Map()
+let board = new Map()
+let boardsToIds = new Map()
+let players = new Map()
 
 wss.on('connection', (connectionId, headers) => {
     let username = headers['username']
@@ -36,6 +41,7 @@ wss.onCommand('createGame', ['gameKey', 'gameName'], (req, resp) => {
     let name = req.data.gameName
     let game = new Game(key, name)
     games.set(key, game)
+    addGameListeners(games)
     resp.send()
 })
 
@@ -44,6 +50,7 @@ wss.onCommand('joinGame', ['gameKey', 'question'], (req, resp) => {
     let user = users.get(connectionId)
     let game = games.get(req.data.gameKey)
     let player = game.addPlayer(name)
+    playerToUser.set(player, user)
     let question = req.data.question
     let tile = new Tile(password, question)
     game.addPlayer(player, tile)
@@ -69,18 +76,55 @@ wss.onCommand('startGame', null, (req, resp) => {
     game.start()
 })
 
-wss.onCommand('fillTile', ['tileId'], (req, resp) => {
+wss.onCommand('fillTile', ['tileId', 'auth'], (req, resp) => {
     let game = users.get(req.id).game
     if (game != null) {
         let player = users.get(req.id).player
         let tileId = req.data.tileId
         let board = boards.get(player)
         let tile = tiles.get(tileId)
+        
+        success = board.selectTile(tile, req.data.auth)
+        if (!success) {
+            resp.data.error = 'Invalid Auth'
+            resp.send()
+            return
+        }
+        resp.send()
     }
 })
 
 function addPlayerListeners(player) {
     player.on('won', () => {
-        //wss.send(won)
+        
     })
+}
+
+function addGameListeners(game) {
+    game.on('won', (player) => {
+        data = {
+            playerId : playerToUser.get(player).id
+        }
+        sendToAllInGame('playerWon', game, data)
+    })
+
+    game.on('started', () => {
+        data = {}
+        let boards = game.boards
+        game.players.forEach((player) => {
+            //command data id
+            let board = boards.get(player)
+            let data = {
+                id : boards
+            }
+            wss.send('gameStarted', boa)
+        })
+    })
+}
+
+function sendToAllInGame(command, game, data) {
+    game.players.foreach((player) => {
+        wss.send(command, data, playerToUser.get(player).connectionId)
+    })
+
 }

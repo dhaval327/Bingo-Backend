@@ -1,6 +1,8 @@
 const wss = require('./WebSocketWrapper/Wrapper')
 const EventEmitter = require('events')
-const Tile = require('./Tile')
+const Tile = require('./game/Tile')
+const bcrypt = require('bcrypt')
+const error = require('./error')
 
 class Player extends EventEmitter  {
     constructor(name) {
@@ -74,6 +76,15 @@ wss.onCommand('startGame', null, (req, resp) => {
         return
     }
     game.start()
+})
+
+wss.onCommand('createAccount', ['username', 'password'], (req, resp) => {
+    const password = req.data.password
+    const username = req.data.username
+
+    bcrypt.hash(password, saltRounds, function(err, hash) {
+        
+    })
 })
 
 wss.onCommand('fillTile', ['tileId', 'auth'], (req, resp) => {

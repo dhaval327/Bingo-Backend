@@ -1,6 +1,6 @@
-const wss = require('./WebSocketWrapper/Wrapper')
+const wss = require('../WebSocketWrapper/Wrapper')
 const EventEmitter = require('events')
-const Tile = require('./game/Tile')
+const Tile = require('../game/Tile')
 const bcrypt = require('bcrypt')
 const error = require('./error')
 

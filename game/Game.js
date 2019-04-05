@@ -10,7 +10,7 @@ module.exports = class Game extends EventEmitter {
         this._players = new Set()
         this._lastError = null
         this.tiles = []
-        this.boards = new Map()
+        this._boards = new Map()
         this.boardOfPlayers = new Map()
         this.boardSize = axis.x*axis.y
         this.axis = axis
@@ -46,19 +46,11 @@ module.exports = class Game extends EventEmitter {
         this.players.forEach((player) => {
             let randTiles = this._genRandomTiles(this.boardSize)
             let board = new Board(randTiles, {x:this.axis.x, y:this.axis.y})
-            board.on('row', () => {
-                this.emit('win', (this.boardOfPlayers.get(board)))
-            })
             this.boards.set(player, board)
             this.boardOfPlayers.set(board, player)
+            player.board = board
         })
         this.emit('gameStarted')
-    }
-
-    _genBoards() {
-        this.players.forEach((player) => {
-            let randTiles = this._genRandomTiles(this.boardSize)
-        })
     }
 
     _genRandomTiles(num) {

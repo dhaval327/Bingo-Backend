@@ -115,7 +115,8 @@ function addGameListeners(game) {
             //command data id
             let board = boards.get(player)
             let data = {
-                id : boards
+                id : boardsToIds.get(board),
+                
             }
             wss.send('gameStarted', boa)
         })
